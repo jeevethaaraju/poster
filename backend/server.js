@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import OpenAI from "openai";
+import Replicate from "replicate";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -14,41 +14,41 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve frontend static files
+// Serve frontend files
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // must be set in Render env
+const replicate = new Replicate({
+  auth: process.env.REPLICATE_API_TOKEN // your Replicate token
 });
 
-// Endpoint for generating AI poster
 app.post("/generate", async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+
   try {
-    const { prompt } = req.body;
+    const output = await replicate.run(
+      "stability-ai/stable-diffusion", // model name
+      {
+        input: {
+          prompt,
+          width: 1024,
+          height: 1024
+        }
+      }
+    );
 
-    if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+    // output is an array of image URLs
+    res.json({ imageUrl: output[0] });
 
-    const response = await client.images.generate({
-      model: "gpt-image-1",
-      prompt,
-      size: "auto", // smaller for testing; can change to 1024x1024 later
-    });
-
-    const imageBase64 = response.data[0].b64_json;
-    const imageUrl = `data:image/png;base64,${imageBase64}`;
-
-    res.json({ imageUrl });
   } catch (error) {
-    console.error("OpenAI API Error:", error);
+    console.error("Replicate error:", error);
     res.status(500).json({ error: "Failed to generate image" });
   }
 });
 
-// Serve index.html for root URL
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
