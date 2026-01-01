@@ -1,7 +1,5 @@
-// Replace this with your Render backend URL when deployed
-const API_URL = "https://poster-1wp7.onrender.com";
+// script.js
 
-// Generate AI Poster
 async function generatePosterAI() {
   const keyword = document.getElementById("keyword").value.trim();
 
@@ -10,49 +8,51 @@ async function generatePosterAI() {
     return;
   }
 
+  // Show loading or reset previous poster
   const posterImg = document.getElementById("posterAI");
-  posterImg.src = ""; // Reset image
+  posterImg.src = ""; // reset image
+  posterImg.alt = "Generating poster...";
 
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch("https://poster-ai-e3tv.onrender.com/generate", { // <== Replace this
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: keyword }),
+      body: JSON.stringify({ prompt: keyword })
     });
+
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
 
     const data = await response.json();
 
     if (data.imageUrl) {
       posterImg.src = data.imageUrl;
-    } else if (data.error) {
-      if (data.error.includes("Billing hard limit")) {
-        alert("Cannot generate poster: OpenAI billing limit reached 😢");
-      } else {
-        alert("Error: " + data.error);
-      }
-      posterImg.src = "https://via.placeholder.com/512x512.png?text=Poster+Unavailable";
+      posterImg.alt = "AI Poster";
     } else {
-      alert("Failed to generate poster.");
-      posterImg.src = "https://via.placeholder.com/512x512.png?text=Poster+Unavailable";
+      posterImg.alt = "Failed to generate poster";
+      alert("No image returned from server.");
     }
-  } catch (err) {
-    console.error(err);
-    alert("Error connecting to server!");
-    posterImg.src = "https://via.placeholder.com/512x512.png?text=Poster+Unavailable";
+
+  } catch (error) {
+    console.error(error);
+    posterImg.alt = "Error connecting to server";
+    alert("Error connecting to server. Please try again later.");
   }
 }
 
-// Download the poster
+// Download function
 function downloadAI() {
-  const img = document.getElementById("posterAI");
-
-  if (!img.src || img.src.includes("placeholder")) {
-    alert("Generate a poster first!");
+  const posterImg = document.getElementById("posterAI");
+  if (!posterImg.src) {
+    alert("No poster to download!");
     return;
   }
 
-  const a = document.createElement("a");
-  a.href = img.src;
-  a.download = "poster.png";
-  a.click();
+  const link = document.createElement("a");
+  link.href = posterImg.src;
+  link.download = "AI_Poster.png";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
