@@ -27,7 +27,7 @@ app.post("/generate", async (req, res) => {
 
   try {
     const output = await replicate.run(
-      "stability-ai/stable-diffusion", // model name
+      "stability-ai/stable-diffusion-3.5-large", // model name
       {
         input: {
           prompt,
@@ -52,3 +52,4 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
