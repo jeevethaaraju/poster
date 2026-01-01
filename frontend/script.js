@@ -1,58 +1,32 @@
-async function generatePosterAI() {
-  const keyword = document.getElementById("keyword").value.trim();
-
-  if (!keyword) {
-    alert("Please enter a keyword!");
+async function generateImage() {
+  const prompt = document.getElementById("prompt").value.trim();
+  if (!prompt) {
+    alert("Please enter a prompt!");
     return;
   }
 
-  const posterImg = document.getElementById("posterAI");
-  posterImg.src = ""; // reset previous image
-  posterImg.alt = "Generating poster...";
+  const img = document.getElementById("result");
+  img.src = ""; // clear previous image
+  img.alt = "Generating...";
 
   try {
-    const response = await fetch("https://poster-ai-e3tv.onrender.com/generate", { // <== Replace with your Render URL
+    const res = await fetch("/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: keyword })
+      body: JSON.stringify({ prompt })
     });
 
-    console.log("Response status:", response.status);
-
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("Data returned:", data);
-
+    const data = await res.json();
     if (data.imageUrl) {
-      posterImg.src = data.imageUrl;
-      posterImg.alt = "AI Poster";
+      img.src = data.imageUrl;
+      img.alt = "Generated Image";
     } else {
-      posterImg.alt = "Failed to generate poster";
-      alert("No image returned from server.");
+      alert(data.error || "Failed to generate image");
+      img.alt = "Failed";
     }
-
-  } catch (error) {
-    console.error("Fetch error:", error);
-    posterImg.alt = "Error connecting to server";
-    alert("Error connecting to server. Check console for details.");
+  } catch (err) {
+    console.error(err);
+    alert("Error generating image");
+    img.alt = "Error";
   }
-}
-
-// Download poster
-function downloadAI() {
-  const posterImg = document.getElementById("posterAI");
-  if (!posterImg.src) {
-    alert("No poster to download!");
-    return;
-  }
-
-  const link = document.createElement("a");
-  link.href = posterImg.src;
-  link.download = "AI_Poster.png";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
 }
