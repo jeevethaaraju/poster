@@ -1,5 +1,3 @@
-// script.js
-
 async function generatePosterAI() {
   const keyword = document.getElementById("keyword").value.trim();
 
@@ -8,23 +6,25 @@ async function generatePosterAI() {
     return;
   }
 
-  // Show loading or reset previous poster
   const posterImg = document.getElementById("posterAI");
-  posterImg.src = ""; // reset image
+  posterImg.src = ""; // reset previous image
   posterImg.alt = "Generating poster...";
 
   try {
-    const response = await fetch("https://poster-ai-e3tv.onrender.com/generate", { // <== Replace this
+    const response = await fetch("https://poster-ai-e3tv.onrender.com/generate", { // <== Replace with your Render URL
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt: keyword })
     });
+
+    console.log("Response status:", response.status);
 
     if (!response.ok) {
       throw new Error(`Server error: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log("Data returned:", data);
 
     if (data.imageUrl) {
       posterImg.src = data.imageUrl;
@@ -35,13 +35,13 @@ async function generatePosterAI() {
     }
 
   } catch (error) {
-    console.error(error);
+    console.error("Fetch error:", error);
     posterImg.alt = "Error connecting to server";
-    alert("Error connecting to server. Please try again later.");
+    alert("Error connecting to server. Check console for details.");
   }
 }
 
-// Download function
+// Download poster
 function downloadAI() {
   const posterImg = document.getElementById("posterAI");
   if (!posterImg.src) {
@@ -56,5 +56,3 @@ function downloadAI() {
   link.click();
   document.body.removeChild(link);
 }
-
-
