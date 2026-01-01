@@ -2,19 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AI Poster Generator</title>
-  <link rel="stylesheet" href="style.css">
+  <title>AI Horde Image Generator</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    input { width: 300px; padding: 8px; }
+    button { padding: 8px 16px; margin-left: 8px; }
+    img { margin-top: 20px; max-width: 80%; border: 1px solid #ccc; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>AI Poster Generator</h2>
-    <input type="text" id="keyword" placeholder="Enter keyword (e.g., Deepavali)">
-    <button onclick="generatePosterAI()">Generate Poster</button>
-    <div id="result">
-      <img id="posterAI" src="" alt="AI Poster">
-    </div>
-    <button onclick="downloadAI()">Download</button>
+  <h1>AI Horde Free Image Generator</h1>
+  <input id="prompt" type="text" placeholder="Enter prompt">
+  <button onclick="generateImage()">Generate</button>
+  <div>
+    <img id="result" src="" alt="Generated Image">
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
