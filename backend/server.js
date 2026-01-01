@@ -31,7 +31,7 @@ app.post("/generate", async (req, res) => {
     const response = await client.images.generate({
       model: "gpt-image-1",
       prompt,
-      size: "512x512", // smaller for testing; can change to 1024x1024 later
+      size: "auto", // smaller for testing; can change to 1024x1024 later
     });
 
     const imageBase64 = response.data[0].b64_json;
@@ -51,3 +51,4 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
