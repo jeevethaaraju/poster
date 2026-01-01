@@ -14,35 +14,37 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve frontend files from frontend folder
+// Serve frontend static files
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY, // must be set in Render env
 });
 
-// Endpoint for generating image
+// Endpoint for generating AI poster
 app.post("/generate", async (req, res) => {
   try {
     const { prompt } = req.body;
+
     if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
     const response = await client.images.generate({
       model: "gpt-image-1",
       prompt,
-      size: "1024x1024",
+      size: "512x512", // smaller for testing; can change to 1024x1024 later
     });
 
     const imageBase64 = response.data[0].b64_json;
     const imageUrl = `data:image/png;base64,${imageBase64}`;
+
     res.json({ imageUrl });
   } catch (error) {
-    console.error(error.response ? error.response.data : error.message);
+    console.error("OpenAI API Error:", error);
     res.status(500).json({ error: "Failed to generate image" });
   }
 });
 
-// Serve index.html for the root URL
+// Serve index.html for root URL
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
