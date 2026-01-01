@@ -14,7 +14,7 @@ async function generatePosterAI() {
   posterImg.alt = "Generating poster...";
 
   try {
-    const response = await fetch("https://poster-ai-e3tv.onrender.com", { // <== Replace this
+    const response = await fetch("https://poster-ai-e3tv.onrender.com/generate", { // <== Replace this
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt: keyword })
@@ -56,4 +56,5 @@ function downloadAI() {
   link.click();
   document.body.removeChild(link);
 }
+
 
